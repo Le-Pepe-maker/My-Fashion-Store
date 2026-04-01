@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All | GGStore |</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+   </head>
+<body>
+
+<div class="container">
+    <div class="navbar">
+      <div class="logo">
+         <img src="images/logo.jpg" width="125px" alt="GGStore Logo">
+     </div>
+      <nav>
+        <ul id="MenuItems">
+             <li><a href="index.html">Home</a></li>
+             <li><a href="product.html">Products</a></li>
+             <li><a href="#">About</a></li>
+             <li><a href="#">Contact</a></li>
+             <li><a href="account.html">Account</a></li>
+         </ul>
+      </nav>
+      <a href="cart.html"><img src="images/cart.jpg" width="50px" height="50px" alt="Cart Icon" style="mix-blend-mode: multiply;"></a>
+       <img src="images/menu.jpg" width="50px" height="50px" 
+      class="menu-icon" alt="Menu Icon"
+      onclick="menutoggle()" style="mix-blend-mode: multiply;">
+  </div>
+</div>
+
+
+
+
+<!------------cart item details------------->    
+<div class="small-container cart-page">
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody id="cartTableBody"></tbody>
+    </table>
+<div class="total-price">
+    <table>
+        <tr>
+            <td>Subtotal</td>
+            <td id="subtotalAmount">$0.00</td>
+        </tr>
+        <tr>
+            <td>Tax (10%)</td>
+            <td id="taxAmount">$0.00</td>
+        </tr>
+        <tr>
+            <td>Total</td>
+            <td id="totalAmount">$0.00</td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+</div>
+    
+    
+  
+  
+<!---footer--->
+<div class="footer">
+  <div class="container">
+    <div class="row">
+
+      <div class="footer-col-1">
+        <h3>Download Our App</h3>
+        <p>Get access to exclusive offers and discounts by downloading our app.</p>
+        <div class="app-logo">
+          <img src="images/app-store.jpg" alt="App Store">
+          <img src="images/google-play.jpg" alt="Google Play">
+        </div>
+      </div>
+
+      <div class="footer-col-2">
+        <img src="images/logo.jpg" width="125" alt="GGStore Logo">
+        <p>
+          Our mission is to provide high-quality fashion products that empower 
+          individuals to express their unique style and confidence.
+        </p>
+      </div>
+
+      <div class="footer-col-3">
+        <h3>Useful Links</h3>
+        <ul>
+          <li>Coupons</li>
+          <li>Blog Post</li>
+          <li>Return Policy</li>
+          <li>Join Affiliate</li>
+        </ul>
+      </div>
+
+      <div class="footer-col-4">
+        <h3>Follow Us</h3>
+        <ul>
+          <li>Facebook</li>
+          <li>Twitter</li>
+          <li>Instagram</li>
+          <li>YouTube</li>
+        </ul>
+      </div>
+
+     </div>
+
+     <hr>
+
+    <p class="copyright">Copyright © 2026 - GGStore</p>
+  </div>
+</div>
+  <script src="site.js"></script>
+  <script>
+    var cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    var cartTableBody = document.getElementById("cartTableBody");
+    var subtotalAmount = document.getElementById("subtotalAmount");
+    var taxAmount = document.getElementById("taxAmount");
+    var totalAmount = document.getElementById("totalAmount");
+
+    function formatPrice(value) {
+      return "$" + value.toFixed(2);
+    }
+
+    function removeItem(itemName) {
+      cartItems = cartItems.filter(function (item) {
+        return item.name !== itemName;
+      });
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      renderCart();
+    }
+
+    function updateQuantity(itemName, quantityValue) {
+      var quantity = Number(quantityValue);
+      if (quantity < 1 || Number.isNaN(quantity)) {
+        quantity = 1;
+      }
+
+      cartItems = cartItems.map(function (item) {
+        if (item.name === itemName) {
+          item.quantity = quantity;
+        }
+        return item;
+      });
+
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      renderCart();
+    }
+
+    function renderCart() {
+      if (cartItems.length === 0) {
+        cartTableBody.innerHTML = '<tr><td colspan="3">Your cart is empty.</td></tr>';
+        subtotalAmount.textContent = "$0.00";
+        taxAmount.textContent = "$0.00";
+        totalAmount.textContent = "$0.00";
+        return;
+      }
+
+      var subtotal = 0;
+      cartTableBody.innerHTML = cartItems
+        .map(function (item) {
+          var itemSubtotal = item.price * item.quantity;
+          subtotal += itemSubtotal;
+          return (
+            '<tr>' +
+              '<td>' +
+                '<div class="cart-info">' +
+                  '<img src="' + item.image + '" alt="' + item.name + '">' +
+                  '<div>' +
+                    '<p>' + item.name + '</p>' +
+                    '<small>' + formatPrice(item.price) + '</small>' +
+                    '<br>' +
+                    '<a href="#" onclick="removeItem(\'' + item.name.replace(/'/g, "\\'") + '\'); return false;">Remove</a>' +
+                  '</div>' +
+                '</div>' +
+              '</td>' +
+              '<td><input type="number" min="1" value="' + item.quantity + '" onchange="updateQuantity(\'' + item.name.replace(/'/g, "\\'") + '\', this.value)"></td>' +
+              '<td>' + formatPrice(itemSubtotal) + '</td>' +
+            '</tr>'
+          );
+        })
+        .join("");
+
+      var tax = subtotal * 0.1;
+      var total = subtotal + tax;
+      subtotalAmount.textContent = formatPrice(subtotal);
+      taxAmount.textContent = formatPrice(tax);
+      totalAmount.textContent = formatPrice(total);
+    }
+
+    renderCart();
+  </script>
+
+  
+    
+</body>
+</html>
+  
+
