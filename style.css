@@ -47,6 +47,9 @@ nav ul li a{
 .menu-icon{
     display: none;
 }
+html {
+  scroll-behavior: smooth;
+}
 /* Mobile: hamburger + collapsible panel (page background, no card) */
 @media only screen and (max-width: 800px) {
     .menu-icon{
